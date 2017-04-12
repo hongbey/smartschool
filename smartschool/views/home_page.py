@@ -1,11 +1,13 @@
-import logging
+# encoding: utf-8
 
+import logging
+from datetime import time
 from django.http import HttpRequest
 from django.http import HttpResponse
 
-from tools.WxBizMsgCrypt.WxErrorCode import iErrorCode
-from ..util.WxUtil import WxUtil
-from ..util.WxXMLParse import WxXMLParse
+from tools.wx_biz_msg_crypt.wx_error_code import iErrorCode
+from util.wx_util import WxUtil
+from util.wx_xml_parse import WxXMLParse
 
 logger = logging.getLogger( __name__ )
 
@@ -27,7 +29,7 @@ class HomePage:
             nonce = request.GET.get("nonce", "")
             echostr = request.GET.get("echostr", "")
 
-            ret, msg = WxUtil.VerifyUrl(signature, timestamp, nonce, echostr)
+            ret, msg = WxUtil.verify_url(signature, timestamp, nonce, echostr)
 
             if ret == iErrorCode.WXBizMsgCrypt_OK:
                 return HttpResponse(msg)
@@ -51,7 +53,7 @@ class HomePage:
             msg_signature = request.GET.get("msg_signature", "")
             timestamp = request.GET.get("timestamp", "")
             nonce     = request.GET.get("nonce", "")
-            ret, msg_xml = WxUtil.DecryptMsg(request_xml, msg_signature, timestamp, nonce)
+            ret, msg_xml = WxUtil.decrypt_msg(msg_map['Encrypt'], msg_signature, timestamp, nonce)
             logger.info(repr(msg_xml))
 
             msg_tags = ['ToUserName', 'FromUserName', 'CreateTime', 'MsgType', 'Content', 'MsgId']
@@ -71,7 +73,7 @@ class HomePage:
             }
             xml_msg = xml_parser.generate(xml_map=msg_map)
             logger.debug(repr(xml_msg))
-            repl_msg = cryptor.encrypt(msg=xml_msg, timestamp=timestamp, nonce=nonce)
-            logger.debug(repr(repl_msg))
+            Ret,signature,repl_msg= WxUtil.encrypt_msg(msg=xml_msg, timestamp=timestamp, nonce=nonce)
+            logger.debug(Ret + " <--->" + repr(repl_msg))
 
             return HttpResponse(repl_msg, content_type="text/xml")

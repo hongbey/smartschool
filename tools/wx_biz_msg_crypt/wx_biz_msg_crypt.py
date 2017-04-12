@@ -15,7 +15,7 @@ import struct
 from Crypto.Cipher import AES
 import xml.etree.cElementTree as ET
 import socket
-from .WxErrorCode import iErrorCode
+from .wx_error_code import iErrorCode
 import logging
 from urllib.parse import unquote
 
@@ -274,8 +274,9 @@ class WXBizMsgCrypt(object):
         ret,signature = sha1.getSHA1(self.m_sToken, timestamp, sNonce, encrypt)
         if ret != 0: 
             return ret,None 
-        xmlParse = XMLParse()  
-        return ret,xmlParse.generate(encrypt, signature, timestamp, sNonce)  
+        #xmlParse = XMLParse()
+        #return ret,xmlParse.generate(encrypt, signature, timestamp, sNonce)
+        return ret,signature,encrypt
 
     def DecryptMsg(self, sPostData, sMsgSignature, sTimeStamp, sNonce):
         # 检验消息的真实性，并且获取解密后的明文
@@ -286,18 +287,22 @@ class WXBizMsgCrypt(object):
         #  xml_content: 解密后的原文，当return返回0时有效
         # @return: 成功0，失败返回对应的错误码
          # 验证安全签名 
-        xmlParse = XMLParse()
-        ret,encrypt,touser_name = xmlParse.extract(sPostData)
-        if ret != 0:
-            return ret, None
+        #xmlParse = XMLParse()
+        #ret,encrypt,touser_name = xmlParse.extract(sPostData)
+        #if ret != 0:
+            #return ret, None
         sha1 = SHA1() 
-        ret,signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, encrypt)
+        ret,signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, sPostData)
         if ret  != 0:
-            return ret, None 
-        if not signature == sMsgSignature:
+            return ret, None
+
+        if not signature != sMsgSignature:
             return iErrorCode.WXBizMsgCrypt_ValidateSignature_Error, None
         pc = Prpcrypt(self.key)
-        ret,xml_content = pc.decrypt(encrypt,self.m_sCorpid)
+
+        #Data = unquote(sPostData)
+        logging.info("sPostData:" + repr(sPostData))
+        ret,xml_content = pc.decrypt(sPostData,self.m_sCorpid)
         return ret,xml_content 
 
 

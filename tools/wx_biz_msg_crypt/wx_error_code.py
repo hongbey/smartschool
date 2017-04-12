@@ -2,7 +2,7 @@
 #########################################################################
 # Author: jonyqin
 # Created Time: Thu 11 Sep 2014 01:53:58 PM CST
-# File Name: WxErrorCode.py
+# File Name: wx_error_code.py
 # Description:定义错误码含义 
 #########################################################################
 class iErrorCode:

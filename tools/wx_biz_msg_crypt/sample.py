@@ -2,11 +2,11 @@
 #########################################################################
 # Author: jonyqin
 # Created Time: Thu 11 Sep 2014 03:55:41 PM CST
-# File Name: Sample.py
+# File Name: sample.py
 # Description: WXBizMsgCrypt 使用demo文件
 #########################################################################
 
-from .WXBizMsgCrypt import WXBizMsgCrypt
+from .wx_biz_msg_crypt import WXBizMsgCrypt
 import sys
 import xml.etree.cElementTree as ET
 if __name__ == "__main__":   

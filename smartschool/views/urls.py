@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from .HomePage import HomePage
+from .home_page import HomePage
 
 urlpatterns = [
     url(r'^$', HomePage.Home, name='home_page'),
